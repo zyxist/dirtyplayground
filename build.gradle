@@ -9,8 +9,7 @@ description = """"""
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
-mainClassName = 'com.zyxist.dirtyplayground.Application'
-
+ext.mainClass = mainClassName = 'com.zyxist.dirtyplayground.Application'
 
 repositories {
      maven { url "http://repo.maven.apache.org/maven2" }

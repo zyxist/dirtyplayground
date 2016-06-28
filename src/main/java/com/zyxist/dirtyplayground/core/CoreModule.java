@@ -19,6 +19,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.multibindings.Multibinder;
+import static com.zyxist.dirtyplayground.core.CoreExtensions.bindExistingService;
 import com.zyxist.dirtyplayground.core.database.DatabaseManager;
 import com.zyxist.dirtyplayground.core.database.DatabaseManagerImpl;
 import com.zyxist.dirtyplayground.core.journal.Journal;
@@ -36,6 +37,7 @@ import com.zyxist.dirtyplayground.core.web.WebStackImpl;
 import io.vertx.core.Vertx;
 import java.util.Set;
 import static com.zyxist.dirtyplayground.core.CoreExtensions.bindSingletonService;
+import javax.inject.Singleton;
 
 public class CoreModule extends AbstractModule {
 
@@ -49,6 +51,9 @@ public class CoreModule extends AbstractModule {
 			.implement(ServiceRunner.class, ServiceRunnerImpl.class)
 			.build(ServiceRunnerFactory.class));
 		bind(ServiceComposer.class);
+		
+		bind(VertxServiceImpl.class).in(Singleton.class);
+		bindExistingService(binder(), CoreService.class, VertxServiceImpl.class);
 		
 		bindSingletonService(binder(), CoreService.class, Journal.class, JournalImpl.class);
 		bindSingletonService(binder(), CoreService.class, WebStack.class, WebStackImpl.class);

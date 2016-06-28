@@ -33,9 +33,9 @@ package com.zyxist.dirtyplayground.core.svc;
  * @author Tomasz Jędrzejewski
  */
 public interface StartableService {
-	default public void start() {
+	default public void start() throws Exception {
 	}
 	
-	default public void stop() {
+	default public void stop() throws Exception {
 	}
 }

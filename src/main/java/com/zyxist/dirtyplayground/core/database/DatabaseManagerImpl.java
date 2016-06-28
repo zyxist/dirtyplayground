@@ -17,27 +17,43 @@
 package com.zyxist.dirtyplayground.core.database;
 
 import com.zyxist.dirtyplayground.core.svc.ProvidesService;
+import com.zyxist.dirtyplayground.core.svc.RequiresServices;
+import com.zyxist.dirtyplayground.core.svc.ServiceException;
 import com.zyxist.dirtyplayground.core.svc.StartableService;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
+import java.util.concurrent.CountDownLatch;
 import javax.inject.Inject;
 
+@RequiresServices({Vertx.class})
 @ProvidesService(DatabaseManager.class)
 public class DatabaseManagerImpl implements DatabaseManager, StartableService {
 	@Inject
 	private Vertx vertx;
-	
+	private boolean connectionSuccessful = false;
 	private MongoClient mongo;
 	
 	@Override
-	public void start() {
+	public void start() throws InterruptedException, ServiceException {
+		CountDownLatch untilStarted = new CountDownLatch(1);
 		mongo = MongoClient.createShared(vertx, new JsonObject().put("db_name", "journal"));
+		mongo.save("dummy", new JsonObject(), (res) -> {
+			connectionSuccessful = res.succeeded();
+			untilStarted.countDown();
+		});
+		untilStarted.await();
+		if (!connectionSuccessful) {
+			mongo.close();
+			throw new ServiceException("Cannot start MongoDB client: connection failed.");
+		}
 	}
 	
 	@Override
 	public void stop() {
-		mongo.close();
+		if (connectionSuccessful) {
+			mongo.close();
+		}
 	}
 
 	@Override

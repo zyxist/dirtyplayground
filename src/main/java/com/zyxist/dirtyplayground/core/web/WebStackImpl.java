@@ -27,7 +27,7 @@ import java.util.Objects;
 import java.util.Set;
 import javax.inject.Inject;
 
-@RequiresServices({Journal.class})
+@RequiresServices({Journal.class, Vertx.class})
 @ProvidesService(WebStack.class)
 public class WebStackImpl implements WebStack, StartableService {
 	private final Vertx vertx;
